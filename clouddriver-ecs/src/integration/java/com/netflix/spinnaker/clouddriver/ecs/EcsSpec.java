@@ -208,6 +208,77 @@ public class EcsSpec {
     assertNotNull(response); // TODO inspect response contents
   }
 
+  @Test
+  public void getServiceDiscoveryRegistriesTest() {
+    // given
+    ProviderCache ecsCache = providerRegistry.getProviderCache(EcsProvider.NAME);
+    String testRegistryId = "spinnaker-registry";
+    String testNamespace = Keys.Namespace.SERVICE_DISCOVERY_REGISTRIES.ns;
+    String serviceDiscoveryRegistryKey =
+        Keys.getServiceDiscoveryRegistryKey(ECS_ACCOUNT_NAME, TEST_REGION, testRegistryId);
+    String url = getTestUrl("/ecs/serviceDiscoveryRegistries");
+    Map<String, Object> attributes = new HashMap<>();
+    attributes.put("account", ECS_ACCOUNT_NAME);
+    attributes.put("region", TEST_REGION);
+    attributes.put("serviceName", "spinnaker-demo");
+    attributes.put("serviceId", "srv-v001");
+    attributes.put(
+        "serviceArn",
+        "arn:aws:servicediscovery:region:aws_account_id:service/srv-utcrh6wavdkggqtk");
+
+    DefaultCacheResult testResult =
+        buildCacheResult(attributes, testNamespace, serviceDiscoveryRegistryKey);
+    ecsCache.addCacheResult("TestAgent", Collections.singletonList(testNamespace), testResult);
+
+    // when
+    Response response = get(url).then().contentType(ContentType.JSON).extract().response();
+
+    // then
+    assertNotNull(response);
+
+    String responseStr = response.asString();
+    assertTrue(responseStr.contains(ECS_ACCOUNT_NAME));
+    assertTrue(responseStr.contains(TEST_REGION));
+    assertTrue(responseStr.contains("spinnaker-demo"));
+    assertTrue(responseStr.contains("srv-v001"));
+    assertTrue(
+        responseStr.contains(
+            "arn:aws:servicediscovery:region:aws_account_id:service/srv-utcrh6wavdkggqtk"));
+  }
+
+  @Test
+  public void getEcsSecretsTest() {
+    // given
+    ProviderCache ecsCache = providerRegistry.getProviderCache(EcsProvider.NAME);
+    String testSecretName = "tut/secret";
+    String testNamespace = Keys.Namespace.SECRETS.ns;
+    String secretKey = Keys.getClusterKey(ECS_ACCOUNT_NAME, TEST_REGION, testSecretName);
+    String url = getTestUrl("/ecs/secrets");
+    Map<String, Object> attributes = new HashMap<>();
+    attributes.put("account", ECS_ACCOUNT_NAME);
+    attributes.put("region", TEST_REGION);
+    attributes.put("secretName", "tut/secret");
+    attributes.put(
+        "secretArn", "arn:aws:secretsmanager:region:aws_account_id:secret:tut/sevret-jiObOV");
+
+    DefaultCacheResult testResult = buildCacheResult(attributes, testNamespace, secretKey);
+    ecsCache.addCacheResult("TestAgent", Collections.singletonList(testNamespace), testResult);
+
+    // when
+    Response response = get(url).then().contentType(ContentType.JSON).extract().response();
+
+    // then
+    assertNotNull(response);
+
+    String responseStr = response.asString();
+    assertTrue(responseStr.contains(ECS_ACCOUNT_NAME));
+    assertTrue(responseStr.contains(TEST_REGION));
+    assertTrue(responseStr.contains("tut/secret"));
+    assertTrue(
+        responseStr.contains(
+            "arn:aws:secretsmanager:region:aws_account_id:secret:tut/sevret-jiObOV"));
+  }
+
   private String generateStringFromTestFile(String path) throws IOException {
     return new String(Files.readAllBytes(Paths.get(TEST_OPERATIONS_LOCATION, path)));
   }
