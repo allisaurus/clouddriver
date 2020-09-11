@@ -24,6 +24,7 @@ import com.netflix.spinnaker.clouddriver.ecs.EcsSpec;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class ServerGroupsSpec extends EcsSpec {
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
+  @DisplayName(".\n===\n" + "Given cached ECS service, retrieve it from /serverGroups" + "\n===")
   @Test
   public void getServerGroupsTest() {
     // given

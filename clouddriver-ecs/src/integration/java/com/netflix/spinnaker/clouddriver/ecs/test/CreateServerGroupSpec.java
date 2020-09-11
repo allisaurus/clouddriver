@@ -23,6 +23,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.io.IOException;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +31,15 @@ public class CreateServerGroupSpec extends EcsSpec {
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
+  @DisplayName(
+      ".\n===\n"
+          + "Given createServerGroup operation, successfully submit createService call to ECS"
+          + "\n===")
   @Test
   public void createServerGroupOperationTest() throws IOException { // no response
     // given
     String url = getTestUrl("/ecs/ops/createServerGroup");
-    String requestBody = generateStringFromTestFile("/createServiceOperation.json");
+    String requestBody = generateStringFromTestFile("/createServerGroup-inputs.json");
     log.info("request body:");
     log.info(requestBody);
 

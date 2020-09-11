@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class EcsControllersSpec extends EcsSpec {
 
   @Autowired private ProviderRegistry providerRegistry;
 
+  @DisplayName(".\n===\n" + "Given cached ECS cluster, retrieve it from /ecs/ecsClusters" + "\n===")
   @Test
   public void getEcsClustersTest() {
     // given
@@ -75,6 +77,7 @@ public class EcsControllersSpec extends EcsSpec {
     assertTrue(responseStr.contains(TEST_REGION));
   }
 
+  @DisplayName(".\n===\n" + "Given cached ECS secret, retrieve it from /ecs/secrets" + "\n===")
   @Test
   public void getEcsSecretsTest() {
     // given
@@ -108,6 +111,10 @@ public class EcsControllersSpec extends EcsSpec {
             "arn:aws:secretsmanager:region:aws_account_id:secret:tut/sevret-jiObOV"));
   }
 
+  @DisplayName(
+      ".\n===\n"
+          + "Given cached service disc registry, retrieve it from /ecs/serviceDiscoveryRegistries"
+          + "\n===")
   @Test
   public void getServiceDiscoveryRegistriesTest() {
     // given
