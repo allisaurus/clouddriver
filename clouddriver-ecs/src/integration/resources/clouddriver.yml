@@ -10,7 +10,7 @@ aws:
       requiredGroupMembership: []
       providerVersion: V1
       permissions: {}
-      accountId: '679273379347'
+      accountId: '123456789012'
       regions:
         - name: us-west-2
       assumeRole: role/SpinnakerManaged

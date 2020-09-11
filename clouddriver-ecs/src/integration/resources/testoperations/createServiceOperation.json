@@ -3,6 +3,6 @@
   "stack": "integ-test-stack",
   "credentials": "ecs-account",
   "cloudProvider": "ecs",
-  "account": "ecs-my-aws-devel-acct",
+  "account": "ecs-account",
   "ecsClusterName": "spinnaker-deployment-cluster"
 }
