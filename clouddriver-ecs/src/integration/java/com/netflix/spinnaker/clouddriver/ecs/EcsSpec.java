@@ -33,9 +33,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -49,8 +49,6 @@ import org.springframework.test.context.junit4.SpringRunner;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {"spring.config.location = classpath:clouddriver.yml"})
 public class EcsSpec {
-
-  private final Logger log = LoggerFactory.getLogger(getClass());
   protected static final String TEST_OPERATIONS_LOCATION =
       "src/integration/resources/testoperations";
   protected final String ECS_ACCOUNT_NAME = "ecs-account";
@@ -69,7 +67,7 @@ public class EcsSpec {
   @MockBean AmazonAccountsSynchronizer mockAccountsSyncer;
 
   @BeforeEach
-  void Setup() {
+  public void setup() {
     NetflixAmazonCredentials mockAwsCreds = mock(NetflixAmazonCredentials.class);
     when(mockAccountsSyncer.synchronize(
             any(CredentialsLoader.class),
@@ -78,7 +76,11 @@ public class EcsSpec {
             any(DefaultAccountConfigurationProperties.class),
             any(CatsModule.class)))
         .thenReturn(Collections.singletonList(mockAwsCreds));
+  }
 
+  @DisplayName(".\n===\n" + "Assert AWS and ECS providers are enabled" + "\n===")
+  @Test
+  public void configTest() {
     assertTrue(awsEnabled);
     assertTrue(ecsEnabled);
   }

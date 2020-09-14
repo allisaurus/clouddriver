@@ -67,7 +67,7 @@ public class CreateServerGroupSpec extends EcsSpec {
 
     NetflixAmazonCredentials ecsCreds =
         new NetflixAmazonCredentials(
-            "ecs-account",
+            ECS_ACCOUNT_NAME,
             "test",
             "test",
             "123456789012",
@@ -90,6 +90,6 @@ public class CreateServerGroupSpec extends EcsSpec {
             false,
             false);
 
-    accountCredentialsRepository.save("ecs-account", ecsCreds);
+    accountCredentialsRepository.save(ECS_ACCOUNT_NAME, ecsCreds);
   }
 }
