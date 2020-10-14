@@ -96,6 +96,7 @@ public class CreateServerGroupSpec extends EcsSpec {
                   return new DescribeTargetGroupsResult().withTargetGroups(testTg);
                 });
 
+    // when(mockAwsProvider.getAmazons)
     when(mockAwsProvider.getAmazonElasticLoadBalancingV2(
             any(NetflixAmazonCredentials.class), anyString(), anyBoolean()))
         .thenReturn(mockELB);

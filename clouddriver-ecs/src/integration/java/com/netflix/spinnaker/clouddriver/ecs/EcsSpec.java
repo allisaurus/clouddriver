@@ -60,24 +60,20 @@ public class EcsSpec {
   @TestConfiguration
   public static class TestConfig {
     /**
-     * Creating a @MockBean for AmazonClientProvider allows mocked responses
-     * during tests to work, but isn't initialized soon enough to work during
-     * app start up. This work is a (so far unsuccessful) attempt to mock the EC2 calls
-     * required to load the Application Context so that we exercise the
-     * AWS/ECS account bootstrapping in clouddriver-aws vs. mocking it all away
-     * with a @MockBean AmazonAccountsSynchronizer.
+     * Creating a @MockBean for AmazonClientProvider allows mocked responses during tests to work,
+     * but isn't initialized soon enough to work during app start up. This work is a (so far
+     * unsuccessful) attempt to mock the EC2 calls required to load the Application Context so that
+     * we exercise the AWS/ECS account bootstrapping in clouddriver-aws vs. mocking it all away with
+     * a @MockBean AmazonAccountsSynchronizer.
      *
-     * currently, this results in:
-     * ```
-     * o.a.c.loader.WebappClassLoaderBase : Illegal access: this web application
-     *    instance has been stopped already. Could not load [org.mockito.codegen.AmazonClientProvider$MockitoMock$1894940203Customizer].
-     *    The following stack trace is thrown for debugging purposes as well as to attempt to
-     *    terminate the thread which caused the illegal access.
-     * ```
+     * <p>currently, this results in: ``` o.a.c.loader.WebappClassLoaderBase : Illegal access: this
+     * web application instance has been stopped already. Could not load
+     * [org.mockito.codegen.AmazonClientProvider$MockitoMock$1894940203Customizer]. The following
+     * stack trace is thrown for debugging purposes as well as to attempt to terminate the thread
+     * which caused the illegal access. ```
      *
-     * custom context loader needed, maybe?
-     * */
-
+     * <p>custom context loader needed, maybe?
+     */
     Logger log = LoggerFactory.getLogger(getClass());
 
     @Bean
