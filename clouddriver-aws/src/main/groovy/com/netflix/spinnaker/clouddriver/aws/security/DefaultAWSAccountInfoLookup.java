@@ -113,6 +113,9 @@ public class DefaultAWSAccountInfoLookup implements AWSAccountInfoLookup {
     if (!nameSet.isEmpty()) {
       request.withRegionNames(regionNames);
     }
+
+    //Region testRegion = new Region().withRegionName("us-west-2");
+    //List<Region> regions = Collections.singletonList(testRegion);
     List<Region> regions = ec2.describeRegions(request).getRegions();
     if (regions.size() != nameSet.size()) {
       Set<String> missingSet = new HashSet<>(nameSet);
@@ -126,6 +129,9 @@ public class DefaultAWSAccountInfoLookup implements AWSAccountInfoLookup {
     for (Region region : regions) {
       AmazonEC2 regionalEc2 =
           amazonClientProvider.getAmazonEC2(credentialsProvider, region.getRegionName());
+
+      //AvailabilityZone testAz = new AvailabilityZone().withRegionName("us-west-2").withZoneName("us-west-2a");
+      //List<AvailabilityZone> azs = Collections.singletonList(testAz);
       List<AvailabilityZone> azs = regionalEc2.describeAvailabilityZones().getAvailabilityZones();
       List<String> availabilityZoneNames = new ArrayList<>(azs.size());
       for (AvailabilityZone az : azs) {
