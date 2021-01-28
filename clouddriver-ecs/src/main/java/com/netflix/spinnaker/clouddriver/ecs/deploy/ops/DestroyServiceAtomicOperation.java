@@ -16,6 +16,11 @@
 
 package com.netflix.spinnaker.clouddriver.ecs.deploy.ops;
 
+import com.amazonaws.services.applicationautoscaling.AWSApplicationAutoScaling;
+import com.amazonaws.services.applicationautoscaling.model.RegisterScalableTargetRequest;
+import com.amazonaws.services.applicationautoscaling.model.ScalableDimension;
+import com.amazonaws.services.applicationautoscaling.model.ServiceNamespace;
+import com.amazonaws.services.applicationautoscaling.model.SuspendedState;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.model.DeleteServiceRequest;
 import com.amazonaws.services.ecs.model.DeleteServiceResult;
@@ -38,10 +43,32 @@ public class DestroyServiceAtomicOperation
   public Void operate(List priorOutputs) {
     updateTaskStatus("Initializing Destroy Amazon ECS Server Group Operation...");
     AmazonECS ecs = getAmazonEcsClient();
+    AWSApplicationAutoScaling autoScalingClient = getAmazonApplicationAutoScalingClient();
 
     String ecsClusterName =
         containerInformationService.getClusterName(
             description.getServerGroupName(), description.getAccount(), description.getRegion());
+
+    // need to suspend autoscaling on ECS service
+    updateTaskStatus(
+      String.format("Suspending autoscaling on %s server group for %s.",
+        description.getServerGroupName(),
+        description.getAccount()));
+    RegisterScalableTargetRequest suspendRequest =
+      new RegisterScalableTargetRequest()
+        .withServiceNamespace(ServiceNamespace.Ecs)
+        .withScalableDimension(ScalableDimension.EcsServiceDesiredCount)
+        .withResourceId(String.format("service/%s/%s", ecsClusterName, description.getServerGroupName()))
+        .withSuspendedState(
+          new SuspendedState()
+            .withDynamicScalingInSuspended(true)
+            .withDynamicScalingOutSuspended(true)
+            .withScheduledScalingSuspended(true));
+    autoScalingClient.registerScalableTarget(suspendRequest);
+    updateTaskStatus(
+      String.format("Autoscaling on server group %s suspended for %s.",
+        description.getServerGroupName(),
+        description.getAccount()));
 
     updateTaskStatus("Removing MetricAlarms from " + description.getServerGroupName() + ".");
     ecsCloudMetricService.deleteMetrics(
@@ -49,7 +76,7 @@ public class DestroyServiceAtomicOperation
     updateTaskStatus("Done removing MetricAlarms from " + description.getServerGroupName() + ".");
 
     UpdateServiceRequest updateServiceRequest = new UpdateServiceRequest();
-    updateServiceRequest.setService(description.getServerGroupName());
+    updateServiceRequest.setService(description.getServerGroupName()); // TODO: will this work with Moniker?
     updateServiceRequest.setDesiredCount(0);
     updateServiceRequest.setCluster(ecsClusterName);
 

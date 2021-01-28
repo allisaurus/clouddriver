@@ -37,6 +37,7 @@ class DestroyServiceAtomicOperationSpec extends CommonAtomicOperation {
     operation.containerInformationService = containerInformationService
 
     amazonClientProvider.getAmazonEcs(_, _, _) >> ecs
+    amazonClientProvider.getAmazonApplicationAutoScaling(_, _, _) >> autoscaling
     containerInformationService.getClusterName(_, _, _) >> 'cluster-name'
     credentialsRepository.getOne(_) >> TestCredential.named("test")
 
@@ -44,6 +45,7 @@ class DestroyServiceAtomicOperationSpec extends CommonAtomicOperation {
     operation.operate([])
 
     then:
+    1 * autoscaling.registerScalableTarget(_)
     1 * ecs.updateService(_)
     1 * ecs.deleteService(_) >> new DeleteServiceResult().withService(new Service().withTaskDefinition("test"))
     1 * ecs.deregisterTaskDefinition(_)
